@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bubbles App</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: 'Times New Roman';
+    }
+    canvas {
+      border: 2px solid #000;
+      margin-top: 10px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Bubbles App</h1>
+  <canvas id="MyCanvas" width="900" height="500"></canvas><br>
+  <button onclick="hitCircle()">Hit</button>
+  <button onclick="resetArrow()">Reset</button>
+
+  <script>
+    const mainCan = document.getElementById('MyCanvas');
+    const rectcanvas = mainCan.getContext('2d');
+    let handleId;
+
+    const circle = {
+      x: 150 , y: 250, radius: 80, color: getRandomColor()
+    };
+
+    const arrow = {
+      x: 800, y: 250, width: 60, height: 5, speed: 7, hitFlag: false
+    };
+
+    drawCircle();
+    drawArrow();
+
+    function hitCircle() {
+      if (!arrow.hitFlag) {
+        handleId = requestAnimationFrame(animateArrow);
+      }
+    }
+
+    function resetArrow() {
+      arrow.x = 800;
+      arrow.hitFlag = false;
+      circle.color = getRandomColor();
+      rectcanvas.clearRect(0, 0, mainCan.width, mainCan.height);
+      drawCircle();
+      drawArrow();
+    }
+
+    function drawCircle() {
+      rectcanvas.beginPath();
+      rectcanvas.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+      rectcanvas.fillStyle = circle.color;
+      rectcanvas.fill();
+      rectcanvas.lineWidth = 3;
+      rectcanvas.stroke();
+      rectcanvas.closePath();
+    }
+
+    function drawArrow() {
+      rectcanvas.fillStyle = 'black';
+      rectcanvas.fillRect(arrow.x - arrow.width + 2, arrow.y - arrow.height / 2, arrow.width, arrow.height);
+
+      rectcanvas.beginPath();
+      rectcanvas.moveTo(arrow.x - arrow.width, arrow.y);
+      rectcanvas.lineTo(arrow.x - arrow.width + 10, arrow.y - 10);
+      rectcanvas.lineTo(arrow.x - arrow.width + 10, arrow.y + 10);
+      rectcanvas.fill();
+      rectcanvas.closePath();
+    }
+
+    function animateArrow() {
+      if (arrow.x - arrow.width <= circle.x + circle.radius) {
+        arrow.hitFlag = true;
+        circle.color = getRandomColor();
+        drawCircle();
+        cancelAnimationFrame(handleId);
+        return;
+      }
+
+        arrow.x = arrow.x - arrow.speed;
+        rectcanvas.clearRect(0, 0, mainCan.width, mainCan.height);
+        drawCircle();
+        drawArrow();
+        handleId = requestAnimationFrame(animateArrow);
+    }
+
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+  </script>
+</body>
+</html>
